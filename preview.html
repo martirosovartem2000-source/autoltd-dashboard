@@ -97,6 +97,14 @@ select#month-select{
   background-repeat:no-repeat;background-position:right 14px center;
 }
 select#month-select:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
+.platform-toggle{display:flex;gap:6px;}
+.ptab{
+  font-family:'Rajdhani';font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-3);background:var(--bezel);border:1px solid var(--line);border-radius:6px;
+  padding:6px 14px;cursor:pointer;
+}
+.ptab.active{color:var(--amber);border-color:var(--amber-dim);background:#1a1610;}
+.ptab:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
 .days-note{font-size:11.5px;color:var(--ink-3);letter-spacing:.02em;}
 
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;}
