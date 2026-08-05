@@ -1,1 +1,361 @@
-<h1>Скоро здесь будет дашборд</h1>
+<title>Автолтд Детейлинг — отчёт по месяцам</title>
+<style>
+:root{
+  --bg:#f3f4f7; --surface:#ffffff; --surface-2:#eef0f4;
+  --ink:#171a21; --ink-2:#565b68; --ink-3:#9096a3;
+  --line:#e2e4ea; --accent:#c65a1f; --accent-ink:#8a3e12;
+  --accent-soft:#fbe9dc; --good:#1f7a4d; --good-soft:#e2f4ea;
+  --bad:#b3261e; --bad-soft:#fbe4e2;
+  --chart-grid:#e6e8ed; --chart-line:#c65a1f; --chart-fill:rgba(198,90,31,0.14);
+  --chart-bar:#2f5d8a; --shadow: 0 1px 2px rgba(20,22,30,.04), 0 8px 24px -12px rgba(20,22,30,.12);
+}
+:root[data-theme="dark"]{
+  --bg:#14151b; --surface:#1c1e26; --surface-2:#22242e;
+  --ink:#eef0f4; --ink-2:#aab0bf; --ink-3:#767c8c;
+  --line:#2c2f3a; --accent:#e07b3f; --accent-ink:#f3a874;
+  --accent-soft:#3a2718; --good:#5fd394; --good-soft:#173226;
+  --bad:#f2867d; --bad-soft:#3a1e1c;
+  --chart-grid:#2a2d38; --chart-line:#e07b3f; --chart-fill:rgba(224,123,63,0.18);
+  --chart-bar:#5b8fc4; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14151b; --surface:#1c1e26; --surface-2:#22242e;
+    --ink:#eef0f4; --ink-2:#aab0bf; --ink-3:#767c8c;
+    --line:#2c2f3a; --accent:#e07b3f; --accent-ink:#f3a874;
+    --accent-soft:#3a2718; --good:#5fd394; --good-soft:#173226;
+    --bad:#f2867d; --bad-soft:#3a1e1c;
+    --chart-grid:#2a2d38; --chart-line:#e07b3f; --chart-fill:rgba(224,123,63,0.18);
+    --chart-bar:#5b8fc4; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;}
+.page{max-width:1080px;margin:0 auto;padding:28px 24px 60px;}
+
+.masthead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;
+  padding-bottom:20px;margin-bottom:22px;border-bottom:1px solid var(--line);}
+.masthead .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:0 0 6px;}
+.masthead h1{font-size:26px;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance;}
+
+.month-picker{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.month-picker label{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);font-weight:600;}
+select#month-select{
+  font:inherit;font-size:15px;font-weight:600;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:8px 34px 8px 14px;cursor:pointer;box-shadow:var(--shadow);
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%239096a3'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;
+}
+select#month-select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+.days-note{font-size:12px;color:var(--ink-3);}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+@media (max-width:760px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:16px 18px;box-shadow:var(--shadow);}
+.kpi .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:8px;}
+.kpi .value{font-size:24px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:var(--ink);}
+.kpi .sub{font-size:12.5px;color:var(--ink-2);margin-top:4px;font-variant-numeric:tabular-nums;}
+.kpi.accent .value{color:var(--accent-ink);}
+.kpi .chip{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 7px;border-radius:100px;margin-top:6px;}
+.chip.good{background:var(--good-soft);color:var(--good);}
+.chip.muted{background:var(--surface-2);color:var(--ink-3);}
+
+.row2{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px;}
+@media (max-width:760px){.row2{grid-template-columns:repeat(2,1fr);}}
+.mini{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 16px;}
+.mini .label{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:6px;}
+.mini .value{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:20px 22px 14px;box-shadow:var(--shadow);margin-bottom:16px;}
+.panel h2{font-size:14px;font-weight:700;margin:0 0 2px;}
+.panel .panel-sub{font-size:12.5px;color:var(--ink-2);margin:0 0 8px;}
+.charts{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
+@media (max-width:820px){.charts{grid-template-columns:1fr;}}
+
+svg{overflow:visible;display:block;width:100%;height:auto;}
+.grid-line{stroke:var(--chart-grid);stroke-width:1;}
+.axis-label{fill:var(--ink-3);font-size:10.5px;font-family:inherit;}
+.area-fill{fill:var(--chart-fill);}
+.line-path{fill:none;stroke:var(--chart-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.end-dot{fill:var(--chart-line);stroke:var(--surface);stroke-width:2;}
+.bar{fill:var(--chart-bar);}
+.hover-line{stroke:var(--ink-3);stroke-width:1;stroke-dasharray:3 3;opacity:0;}
+.hover-dot{fill:var(--chart-line);stroke:var(--surface);stroke-width:2;opacity:0;}
+.tooltip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);
+  font-size:11.5px;padding:5px 9px;border-radius:6px;transform:translate(-50%,-130%);
+  white-space:nowrap;opacity:0;transition:opacity .1s;font-variant-numeric:tabular-nums;z-index:5;}
+.chart-wrap{position:relative;}
+
+.foot{display:flex;justify-content:space-between;color:var(--ink-3);font-size:12px;padding-top:6px;}
+.empty-note{font-size:12.5px;color:var(--ink-3);padding:10px 0;}
+</style>
+
+<div class="page">
+
+  <div class="masthead">
+    <div>
+      <p class="eyebrow">Отчёт по рекламе</p>
+      <h1>Автолтд Детейлинг</h1>
+    </div>
+    <div class="month-picker">
+      <label for="month-select">Месяц</label>
+      <select id="month-select"></select>
+      <span class="days-note" id="days-note"></span>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="label">Бюджет</div><div class="value" id="k-spend">—</div><div class="sub" id="k-spend-sub">—</div></div>
+    <div class="kpi"><div class="label">Заявки</div><div class="value" id="k-leads">—</div><div class="sub" id="k-leads-sub">—</div></div>
+    <div class="kpi"><div class="label">Продажи</div><div class="value" id="k-sales">—</div><div class="sub" id="k-sales-sub">—</div></div>
+    <div class="kpi accent"><div class="label">Сумма продаж</div><div class="value" id="k-salessum">—</div><div class="sub" id="k-salessum-sub">—</div></div>
+  </div>
+
+  <div class="row2">
+    <div class="mini"><div class="label">Показы</div><div class="value" id="k-impr">—</div></div>
+    <div class="mini"><div class="label">CPC средний</div><div class="value" id="k-cpc">—</div></div>
+    <div class="mini"><div class="label">Конв. в продажу</div><div class="value" id="k-saleconv">—</div></div>
+    <div class="mini"><div class="label">ДРР</div><div class="value" id="k-drr">—</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Динамика по дням</h2>
+    <p class="panel-sub" id="chart-sub">Расход и заявки</p>
+    <div class="charts">
+      <div class="chart-wrap" id="spend-wrap">
+        <svg id="spend-chart" viewBox="0 0 560 220" preserveAspectRatio="none"></svg>
+        <div class="tooltip" id="spend-tip"></div>
+      </div>
+      <div class="chart-wrap" id="leads-wrap">
+        <svg id="leads-chart" viewBox="0 0 420 220" preserveAspectRatio="none"></svg>
+        <div class="tooltip" id="leads-tip"></div>
+      </div>
+    </div>
+    <div class="foot">
+      <span>Расход, $/день · нажми на точку или столбик</span>
+      <span>Заявки/день</span>
+    </div>
+  </div>
+
+  <div class="panel" id="day-panel">
+    <h2>Детали дня</h2>
+    <p class="panel-sub" id="day-panel-sub">Нажми на график выше, чтобы увидеть цифры за конкретный день</p>
+    <div class="row2" id="day-tiles" style="display:none;">
+      <div class="mini"><div class="label">Дата</div><div class="value" id="d-day">—</div></div>
+      <div class="mini"><div class="label">Расход</div><div class="value" id="d-spend">—</div></div>
+      <div class="mini"><div class="label">Заявки</div><div class="value" id="d-leads">—</div></div>
+      <div class="mini"><div class="label">Продажи</div><div class="value" id="d-sales">—</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DATA = {"Ноябрь 2025": {"kpi": {"spend": 211.39000000000004, "impressions": 52487, "clicks": 610, "cpc": 0.3614787130680858, "ctr": 0.011929817814159796, "subs": 63, "leads": 101, "visits": 0, "target_leads": 92, "lead_conv": 0.9283910533910534, "sale_conv": 0.03333333333333333, "sales_count": 3, "sales_sum": 7602.739726027397, "drr": 0.027804450450450456}, "daily": [{"day": 18, "spend": 20.89, "leads": 11, "sales_cnt": 0, "sales_sum": 0}, {"day": 19, "spend": 23.61, "leads": 16, "sales_cnt": 1, "sales_sum": 2568.49}, {"day": 20, "spend": 24.71, "leads": 15, "sales_cnt": 1, "sales_sum": 2568.49}, {"day": 21, "spend": 10.06, "leads": 9, "sales_cnt": 0, "sales_sum": 0}, {"day": 22, "spend": 10.21, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 23, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 24, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 25, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 26, "spend": 29.9, "leads": 12, "sales_cnt": 1, "sales_sum": 2465.75}, {"day": 27, "spend": 25.35, "leads": 16, "sales_cnt": 0, "sales_sum": 0}, {"day": 28, "spend": 20.92, "leads": 4, "sales_cnt": 0, "sales_sum": 0}, {"day": 29, "spend": 19.09, "leads": 7, "sales_cnt": 0, "sales_sum": 0}, {"day": 30, "spend": 26.65, "leads": 10, "sales_cnt": 0, "sales_sum": 0}]}, "Декабрь 2025": {"kpi": {"spend": 777.4, "impressions": 177432, "clicks": 1708, "cpc": 0.4984516183331622, "ctr": 0.010004373499227925, "subs": 108, "leads": 242, "visits": 0, "target_leads": 212, "lead_conv": 0.8983712524035105, "sale_conv": 0.07692012288786483, "sales_count": 14, "sales_sum": 15701.584192439863, "drr": 0.0495109277173643}, "daily": [{"day": 1, "spend": 29.49, "leads": 9, "sales_cnt": 1, "sales_sum": 886.6}, {"day": 2, "spend": 25.09, "leads": 11, "sales_cnt": 1, "sales_sum": 618.56}, {"day": 3, "spend": 23.54, "leads": 9, "sales_cnt": 0, "sales_sum": 0}, {"day": 4, "spend": 24.06, "leads": 11, "sales_cnt": 1, "sales_sum": 824.74}, {"day": 5, "spend": 25.89, "leads": 9, "sales_cnt": 1, "sales_sum": 1477.66}, {"day": 6, "spend": 23.64, "leads": 9, "sales_cnt": 1, "sales_sum": 2749.14}, {"day": 7, "spend": 34.58, "leads": 11, "sales_cnt": 0, "sales_sum": 0}, {"day": 8, "spend": 33.1, "leads": 6, "sales_cnt": 1, "sales_sum": 386.6}, {"day": 9, "spend": 20.94, "leads": 6, "sales_cnt": 1, "sales_sum": 687.29}, {"day": 10, "spend": 22.98, "leads": 7, "sales_cnt": 0, "sales_sum": 0}, {"day": 11, "spend": 25.23, "leads": 9, "sales_cnt": 0, "sales_sum": 0}, {"day": 12, "spend": 20.32, "leads": 8, "sales_cnt": 0, "sales_sum": 0}, {"day": 13, "spend": 21.34, "leads": 4, "sales_cnt": 0, "sales_sum": 0}, {"day": 14, "spend": 31.96, "leads": 8, "sales_cnt": 0, "sales_sum": 0}, {"day": 15, "spend": 29.42, "leads": 7, "sales_cnt": 1, "sales_sum": 3250}, {"day": 16, "spend": 23.21, "leads": 10, "sales_cnt": 0, "sales_sum": 0}, {"day": 17, "spend": 25.2, "leads": 4, "sales_cnt": 1, "sales_sum": 170}, {"day": 18, "spend": 23, "leads": 6, "sales_cnt": 1, "sales_sum": 799}, {"day": 19, "spend": 24.52, "leads": 9, "sales_cnt": 1, "sales_sum": 578}, {"day": 20, "spend": 17.99, "leads": 5, "sales_cnt": 0, "sales_sum": 0}, {"day": 21, "spend": 31.83, "leads": 8, "sales_cnt": 1, "sales_sum": 544}, {"day": 22, "spend": 23.59, "leads": 4, "sales_cnt": 1, "sales_sum": 1430}, {"day": 23, "spend": 35.98, "leads": 13, "sales_cnt": 1, "sales_sum": 1300}, {"day": 24, "spend": 27.59, "leads": 9, "sales_cnt": 0, "sales_sum": 0}, {"day": 25, "spend": 22.39, "leads": 12, "sales_cnt": 0, "sales_sum": 0}, {"day": 26, "spend": 27.99, "leads": 13, "sales_cnt": 0, "sales_sum": 0}, {"day": 27, "spend": 18.29, "leads": 3, "sales_cnt": 0, "sales_sum": 0}, {"day": 28, "spend": 18.35, "leads": 4, "sales_cnt": 0, "sales_sum": 0}, {"day": 29, "spend": 28.23, "leads": 8, "sales_cnt": 0, "sales_sum": 0}, {"day": 30, "spend": 24.23, "leads": 5, "sales_cnt": 0, "sales_sum": 0}, {"day": 31, "spend": 13.43, "leads": 5, "sales_cnt": 0, "sales_sum": 0}]}, "Январь 2026": {"kpi": {"spend": 942.77, "impressions": 244394, "clicks": 2141, "cpc": 0.4539980423290853, "ctr": 0.009350145401485259, "subs": 425, "leads": 231, "visits": 0, "target_leads": 176, "lead_conv": 0.7683714596949893, "sale_conv": 0.13066257816257817, "sales_count": 19, "sales_sum": 23601, "drr": 0.039946188720816914}, "daily": [{"day": 2, "spend": 34.95, "leads": 7, "sales_cnt": 1, "sales_sum": 1688}, {"day": 3, "spend": 23.9, "leads": 10, "sales_cnt": 1, "sales_sum": 1137}, {"day": 4, "spend": 20.06, "leads": 4, "sales_cnt": 1, "sales_sum": 551}, {"day": 5, "spend": 27.91, "leads": 12, "sales_cnt": 0, "sales_sum": 0}, {"day": 6, "spend": 21.84, "leads": 7, "sales_cnt": 1, "sales_sum": 812}, {"day": 7, "spend": 27.8, "leads": 11, "sales_cnt": 1, "sales_sum": 829}, {"day": 8, "spend": 26.48, "leads": 10, "sales_cnt": 0, "sales_sum": 0}, {"day": 9, "spend": 18.12, "leads": 3, "sales_cnt": 1, "sales_sum": 477}, {"day": 10, "spend": 21.11, "leads": 6, "sales_cnt": 0, "sales_sum": 0}, {"day": 11, "spend": 25.25, "leads": 6, "sales_cnt": 0, "sales_sum": 0}, {"day": 12, "spend": 33.27, "leads": 4, "sales_cnt": 1, "sales_sum": 3329}, {"day": 13, "spend": 26.12, "leads": 9, "sales_cnt": 1, "sales_sum": 975}, {"day": 14, "spend": 24.43, "leads": 8, "sales_cnt": 1, "sales_sum": 879}, {"day": 15, "spend": 22.16, "leads": 6, "sales_cnt": 1, "sales_sum": 508}, {"day": 16, "spend": 22.27, "leads": 6, "sales_cnt": 1, "sales_sum": 1117}, {"day": 17, "spend": 17.99, "leads": 5, "sales_cnt": 0, "sales_sum": 0}, {"day": 18, "spend": 29.7, "leads": 7, "sales_cnt": 0, "sales_sum": 0}, {"day": 19, "spend": 46.01, "leads": 6, "sales_cnt": 0, "sales_sum": 0}, {"day": 20, "spend": 37.33, "leads": 7, "sales_cnt": 0, "sales_sum": 0}, {"day": 21, "spend": 42.33, "leads": 7, "sales_cnt": 1, "sales_sum": 1054}, {"day": 22, "spend": 67.48, "leads": 17, "sales_cnt": 0, "sales_sum": 0}, {"day": 23, "spend": 34.56, "leads": 5, "sales_cnt": 1, "sales_sum": 1346}, {"day": 24, "spend": 27.83, "leads": 8, "sales_cnt": 0, "sales_sum": 0}, {"day": 25, "spend": 29.41, "leads": 7, "sales_cnt": 1, "sales_sum": 1368}, {"day": 26, "spend": 42.25, "leads": 10, "sales_cnt": 1, "sales_sum": 3316}, {"day": 27, "spend": 42.27, "leads": 7, "sales_cnt": 1, "sales_sum": 1070}, {"day": 28, "spend": 40.73, "leads": 9, "sales_cnt": 1, "sales_sum": 1368}, {"day": 29, "spend": 34.05, "leads": 7, "sales_cnt": 1, "sales_sum": 732}, {"day": 30, "spend": 42.82, "leads": 15, "sales_cnt": 1, "sales_sum": 1045}, {"day": 31, "spend": 32.34, "leads": 5, "sales_cnt": 0, "sales_sum": 0}]}, "Февраль 2026": {"kpi": {"spend": 1219.27, "impressions": 387928, "clicks": 2701, "cpc": 0.46022305478225867, "ctr": 0.007280567400173208, "subs": 424, "leads": 299, "visits": 0, "target_leads": 220, "lead_conv": 0.7354899768765316, "sale_conv": 0.1069470212327355, "sales_count": 18, "sales_sum": 17149, "drr": 0.07109860633273077}, "daily": [{"day": 1, "spend": 48.18, "leads": 11, "sales_cnt": 1, "sales_sum": 854}, {"day": 2, "spend": 46.98, "leads": 13, "sales_cnt": 1, "sales_sum": 767}, {"day": 3, "spend": 38.78, "leads": 13, "sales_cnt": 1, "sales_sum": 1917}, {"day": 4, "spend": 39.67, "leads": 7, "sales_cnt": 0, "sales_sum": 0}, {"day": 5, "spend": 41.12, "leads": 8, "sales_cnt": 0, "sales_sum": 0}, {"day": 6, "spend": 38.4, "leads": 13, "sales_cnt": 1, "sales_sum": 628}, {"day": 7, "spend": 34.79, "leads": 4, "sales_cnt": 1, "sales_sum": 767}, {"day": 8, "spend": 44.87, "leads": 17, "sales_cnt": 0, "sales_sum": 0}, {"day": 9, "spend": 52.08, "leads": 16, "sales_cnt": 0, "sales_sum": 0}, {"day": 10, "spend": 43.5, "leads": 9, "sales_cnt": 1, "sales_sum": 891}, {"day": 11, "spend": 38.41, "leads": 13, "sales_cnt": 1, "sales_sum": 691}, {"day": 12, "spend": 45.83, "leads": 15, "sales_cnt": 1, "sales_sum": 596}, {"day": 13, "spend": 37.45, "leads": 4, "sales_cnt": 1, "sales_sum": 960}, {"day": 14, "spend": 24.23, "leads": 6, "sales_cnt": 1, "sales_sum": 1664}, {"day": 15, "spend": 36.4, "leads": 15, "sales_cnt": 1, "sales_sum": 1210}, {"day": 16, "spend": 36.31, "leads": 11, "sales_cnt": 1, "sales_sum": 1130}, {"day": 17, "spend": 40.37, "leads": 9, "sales_cnt": 1, "sales_sum": 1330}, {"day": 18, "spend": 56.64, "leads": 7, "sales_cnt": 1, "sales_sum": 835}, {"day": 19, "spend": 55.7, "leads": 21, "sales_cnt": 0, "sales_sum": 0}, {"day": 20, "spend": 53.47, "leads": 7, "sales_cnt": 0, "sales_sum": 0}, {"day": 21, "spend": 50.09, "leads": 15, "sales_cnt": 1, "sales_sum": 525}, {"day": 22, "spend": 57.05, "leads": 14, "sales_cnt": 1, "sales_sum": 807}, {"day": 23, "spend": 71.69, "leads": 15, "sales_cnt": 0, "sales_sum": 0}, {"day": 24, "spend": 61.21, "leads": 9, "sales_cnt": 1, "sales_sum": 491}, {"day": 25, "spend": 41.28, "leads": 8, "sales_cnt": 1, "sales_sum": 1086}, {"day": 26, "spend": 31.49, "leads": 6, "sales_cnt": 0, "sales_sum": 0}, {"day": 27, "spend": 28.62, "leads": 5, "sales_cnt": 0, "sales_sum": 0}, {"day": 28, "spend": 24.66, "leads": 8, "sales_cnt": 0, "sales_sum": 0}]}, "Март": {"kpi": {"spend": 1475.8899999999996, "impressions": 689223, "clicks": 8374, "cpc": 0.2388735385672501, "ctr": 0.016048977077862528, "subs": 817, "leads": 480, "visits": 5912, "target_leads": 365, "lead_conv": 0.7604166666666666, "sale_conv": 0.04583333333333333, "sales_count": 22, "sales_sum": 22298, "drr": 0.06618934433581486}, "daily": [{"day": 1, "spend": 43.77, "leads": 14, "sales_cnt": 1, "sales_sum": 2250}, {"day": 2, "spend": 44.45, "leads": 12, "sales_cnt": 0, "sales_sum": 0}, {"day": 3, "spend": 48.3, "leads": 12, "sales_cnt": 0, "sales_sum": 0}, {"day": 4, "spend": 45.98, "leads": 16, "sales_cnt": 1, "sales_sum": 577}, {"day": 5, "spend": 45.26, "leads": 12, "sales_cnt": 1, "sales_sum": 957}, {"day": 6, "spend": 43.86, "leads": 11, "sales_cnt": 1, "sales_sum": 1402}, {"day": 7, "spend": 47.7, "leads": 19, "sales_cnt": 1, "sales_sum": 615}, {"day": 8, "spend": 51.71, "leads": 15, "sales_cnt": 1, "sales_sum": 3113}, {"day": 9, "spend": 52.22, "leads": 11, "sales_cnt": 1, "sales_sum": 684}, {"day": 10, "spend": 51.42, "leads": 16, "sales_cnt": 1, "sales_sum": 666}, {"day": 11, "spend": 49.8, "leads": 14, "sales_cnt": 1, "sales_sum": 815}, {"day": 12, "spend": 56.45, "leads": 12, "sales_cnt": 1, "sales_sum": 781}, {"day": 13, "spend": 38.75, "leads": 9, "sales_cnt": 1, "sales_sum": 882}, {"day": 14, "spend": 41.4, "leads": 16, "sales_cnt": 1, "sales_sum": 501}, {"day": 15, "spend": 49.69, "leads": 20, "sales_cnt": 1, "sales_sum": 567}, {"day": 16, "spend": 50.17, "leads": 11, "sales_cnt": 1, "sales_sum": 677}, {"day": 17, "spend": 49.92, "leads": 11, "sales_cnt": 1, "sales_sum": 677}, {"day": 18, "spend": 46.76, "leads": 13, "sales_cnt": 1, "sales_sum": 1643}, {"day": 19, "spend": 44.4, "leads": 15, "sales_cnt": 1, "sales_sum": 2023}, {"day": 20, "spend": 43.98, "leads": 21, "sales_cnt": 1, "sales_sum": 1151}, {"day": 21, "spend": 43.63, "leads": 30, "sales_cnt": 1, "sales_sum": 643}, {"day": 22, "spend": 46.24, "leads": 24, "sales_cnt": 1, "sales_sum": 558}, {"day": 23, "spend": 44.09, "leads": 22, "sales_cnt": 1, "sales_sum": 558}, {"day": 24, "spend": 48.17, "leads": 20, "sales_cnt": 1, "sales_sum": 558}, {"day": 25, "spend": 47.27, "leads": 13, "sales_cnt": 0, "sales_sum": 0}, {"day": 26, "spend": 45.59, "leads": 15, "sales_cnt": 0, "sales_sum": 0}, {"day": 27, "spend": 50.15, "leads": 19, "sales_cnt": 0, "sales_sum": 0}, {"day": 28, "spend": 50.73, "leads": 16, "sales_cnt": 0, "sales_sum": 0}, {"day": 29, "spend": 52.62, "leads": 20, "sales_cnt": 0, "sales_sum": 0}, {"day": 30, "spend": 52.81, "leads": 8, "sales_cnt": 0, "sales_sum": 0}, {"day": 31, "spend": 48.6, "leads": 13, "sales_cnt": 0, "sales_sum": 0}]}, "Апрель": {"kpi": {"spend": 1432.4099999999999, "impressions": 539920, "clicks": 7253, "cpc": 0.3647216602570492, "ctr": 0.01524177211938769, "subs": 659, "leads": 480, "visits": 5408, "target_leads": 389, "lead_conv": 0.8104166666666667, "sale_conv": 0.06458333333333334, "sales_count": 31, "sales_sum": 23578, "drr": 0.06075197217745355}, "daily": [{"day": 1, "spend": 46.29, "leads": 16, "sales_cnt": 1, "sales_sum": 595}, {"day": 2, "spend": 42.16, "leads": 16, "sales_cnt": 1, "sales_sum": 987}, {"day": 3, "spend": 47.47, "leads": 11, "sales_cnt": 1, "sales_sum": 562}, {"day": 4, "spend": 41.4, "leads": 7, "sales_cnt": 1, "sales_sum": 562}, {"day": 5, "spend": 53.42, "leads": 25, "sales_cnt": 1, "sales_sum": 564}, {"day": 6, "spend": 50.4, "leads": 13, "sales_cnt": 1, "sales_sum": 562}, {"day": 7, "spend": 44.8, "leads": 11, "sales_cnt": 1, "sales_sum": 2012}, {"day": 8, "spend": 45.72, "leads": 11, "sales_cnt": 1, "sales_sum": 600}, {"day": 9, "spend": 49.54, "leads": 11, "sales_cnt": 1, "sales_sum": 1010}, {"day": 10, "spend": 45.62, "leads": 8, "sales_cnt": 1, "sales_sum": 846}, {"day": 11, "spend": 49.8, "leads": 19, "sales_cnt": 1, "sales_sum": 635}, {"day": 12, "spend": 49.05, "leads": 8, "sales_cnt": 1, "sales_sum": 635}, {"day": 13, "spend": 49.41, "leads": 13, "sales_cnt": 1, "sales_sum": 1940}, {"day": 14, "spend": 48.9, "leads": 15, "sales_cnt": 1, "sales_sum": 425}, {"day": 15, "spend": 48.97, "leads": 12, "sales_cnt": 1, "sales_sum": 159}, {"day": 16, "spend": 51.83, "leads": 3, "sales_cnt": 0, "sales_sum": 0}, {"day": 17, "spend": 47.54, "leads": 16, "sales_cnt": 0, "sales_sum": 0}, {"day": 18, "spend": 47.45, "leads": 8, "sales_cnt": 0, "sales_sum": 0}, {"day": 19, "spend": 50.53, "leads": 14, "sales_cnt": 0, "sales_sum": 0}, {"day": 20, "spend": 54.73, "leads": 22, "sales_cnt": 0, "sales_sum": 0}, {"day": 21, "spend": 54.1, "leads": 22, "sales_cnt": 0, "sales_sum": 0}, {"day": 22, "spend": 56.08, "leads": 30, "sales_cnt": 0, "sales_sum": 0}, {"day": 23, "spend": 53.86, "leads": 27, "sales_cnt": 0, "sales_sum": 0}, {"day": 24, "spend": 41.25, "leads": 15, "sales_cnt": 0, "sales_sum": 0}, {"day": 25, "spend": 42.72, "leads": 13, "sales_cnt": 0, "sales_sum": 0}, {"day": 26, "spend": 52.47, "leads": 17, "sales_cnt": 0, "sales_sum": 0}, {"day": 27, "spend": 49.5, "leads": 19, "sales_cnt": 0, "sales_sum": 0}, {"day": 28, "spend": 43.86, "leads": 18, "sales_cnt": 0, "sales_sum": 0}, {"day": 29, "spend": 38.81, "leads": 18, "sales_cnt": 0, "sales_sum": 0}, {"day": 30, "spend": 34.73, "leads": 8, "sales_cnt": 0, "sales_sum": 0}]}, "Май": {"kpi": {"spend": 1610.6199999999997, "impressions": 545528, "clicks": 7757, "cpc": 0.3522126740684789, "ctr": 0.016663835972641507, "subs": 305, "leads": 495, "visits": 5570, "target_leads": 399, "lead_conv": 0.806060606060606, "sale_conv": 0.048484848484848485, "sales_count": 24, "sales_sum": 27926, "drr": 0.057674568502470804}, "daily": [{"day": 1, "spend": 33.77, "leads": 6, "sales_cnt": 1, "sales_sum": 1501}, {"day": 2, "spend": 34.69, "leads": 14, "sales_cnt": 1, "sales_sum": 1496}, {"day": 3, "spend": 38.52, "leads": 11, "sales_cnt": 1, "sales_sum": 1115}, {"day": 4, "spend": 46.3, "leads": 17, "sales_cnt": 1, "sales_sum": 2671}, {"day": 5, "spend": 48.66, "leads": 17, "sales_cnt": 1, "sales_sum": 962}, {"day": 6, "spend": 44.02, "leads": 10, "sales_cnt": 1, "sales_sum": 962}, {"day": 7, "spend": 46.61, "leads": 19, "sales_cnt": 1, "sales_sum": 944}, {"day": 8, "spend": 49.68, "leads": 12, "sales_cnt": 1, "sales_sum": 648}, {"day": 9, "spend": 51.56, "leads": 14, "sales_cnt": 1, "sales_sum": 756}, {"day": 10, "spend": 49.59, "leads": 21, "sales_cnt": 1, "sales_sum": 900}, {"day": 11, "spend": 48.02, "leads": 20, "sales_cnt": 1, "sales_sum": 900}, {"day": 12, "spend": 55.95, "leads": 18, "sales_cnt": 1, "sales_sum": 576}, {"day": 13, "spend": 46.72, "leads": 11, "sales_cnt": 1, "sales_sum": 1026}, {"day": 14, "spend": 58.79, "leads": 13, "sales_cnt": 1, "sales_sum": 930}, {"day": 15, "spend": 59.3, "leads": 14, "sales_cnt": 0, "sales_sum": 0}, {"day": 16, "spend": 57.16, "leads": 17, "sales_cnt": 1, "sales_sum": 908}, {"day": 17, "spend": 61.89, "leads": 14, "sales_cnt": 0, "sales_sum": 0}, {"day": 18, "spend": 59.0, "leads": 11, "sales_cnt": 1, "sales_sum": 2338}, {"day": 19, "spend": 56.65, "leads": 18, "sales_cnt": 0, "sales_sum": 0}, {"day": 20, "spend": 41.19, "leads": 14, "sales_cnt": 1, "sales_sum": 690}, {"day": 21, "spend": 48.43, "leads": 15, "sales_cnt": 0, "sales_sum": 0}, {"day": 22, "spend": 52.8, "leads": 15, "sales_cnt": 0, "sales_sum": 0}, {"day": 23, "spend": 47.37, "leads": 12, "sales_cnt": 0, "sales_sum": 0}, {"day": 24, "spend": 52.31, "leads": 14, "sales_cnt": 0, "sales_sum": 0}, {"day": 25, "spend": 57.2, "leads": 21, "sales_cnt": 0, "sales_sum": 0}, {"day": 26, "spend": 57.03, "leads": 17, "sales_cnt": 0, "sales_sum": 0}, {"day": 27, "spend": 61.87, "leads": 21, "sales_cnt": 0, "sales_sum": 0}, {"day": 28, "spend": 60.14, "leads": 21, "sales_cnt": 0, "sales_sum": 0}, {"day": 29, "spend": 60.51, "leads": 16, "sales_cnt": 0, "sales_sum": 0}, {"day": 30, "spend": 60.75, "leads": 20, "sales_cnt": 0, "sales_sum": 0}, {"day": 31, "spend": 64.14, "leads": 26, "sales_cnt": 0, "sales_sum": 0}]}, "Июнь": {"kpi": {"spend": 1791.69, "impressions": 669544, "clicks": 15762, "cpc": 0.23784171448223718, "ctr": 0.024436173601110688, "subs": 344, "leads": 475, "visits": 12656, "target_leads": 376, "lead_conv": 0.791578947368421, "sale_conv": 0.042105263157894736, "sales_count": 20, "sales_sum": 28769, "drr": 0.06227849421252042}, "daily": [{"day": 1, "spend": 63.08, "leads": 22, "sales_cnt": 1, "sales_sum": 1390}, {"day": 2, "spend": 64.87, "leads": 9, "sales_cnt": 1, "sales_sum": 385}, {"day": 3, "spend": 61.4, "leads": 18, "sales_cnt": 1, "sales_sum": 35}, {"day": 4, "spend": 60.07, "leads": 17, "sales_cnt": 1, "sales_sum": 1461}, {"day": 5, "spend": 57.49, "leads": 23, "sales_cnt": 1, "sales_sum": 1461}, {"day": 6, "spend": 57.31, "leads": 7, "sales_cnt": 1, "sales_sum": 813}, {"day": 7, "spend": 61.24, "leads": 23, "sales_cnt": 1, "sales_sum": 677}, {"day": 8, "spend": 63.38, "leads": 16, "sales_cnt": 1, "sales_sum": 2832}, {"day": 9, "spend": 57.61, "leads": 16, "sales_cnt": 1, "sales_sum": 1695}, {"day": 10, "spend": 52.23, "leads": 12, "sales_cnt": 1, "sales_sum": 3425}, {"day": 11, "spend": 40.63, "leads": 8, "sales_cnt": 1, "sales_sum": 1695}, {"day": 12, "spend": 44.71, "leads": 17, "sales_cnt": 1, "sales_sum": 790}, {"day": 13, "spend": 58.4, "leads": 8, "sales_cnt": 1, "sales_sum": 1207}, {"day": 14, "spend": 55.76, "leads": 22, "sales_cnt": 1, "sales_sum": 2485}, {"day": 15, "spend": 55.18, "leads": 14, "sales_cnt": 1, "sales_sum": 799}, {"day": 16, "spend": 54.3, "leads": 15, "sales_cnt": 1, "sales_sum": 852}, {"day": 17, "spend": 59.46, "leads": 16, "sales_cnt": 1, "sales_sum": 3498}, {"day": 18, "spend": 56.41, "leads": 15, "sales_cnt": 1, "sales_sum": 1135}, {"day": 19, "spend": 61.59, "leads": 11, "sales_cnt": 1, "sales_sum": 1514}, {"day": 20, "spend": 59.97, "leads": 9, "sales_cnt": 1, "sales_sum": 620}, {"day": 21, "spend": 70.9, "leads": 11, "sales_cnt": 0, "sales_sum": 0}, {"day": 22, "spend": 75.08, "leads": 14, "sales_cnt": 0, "sales_sum": 0}, {"day": 23, "spend": 70.54, "leads": 15, "sales_cnt": 0, "sales_sum": 0}, {"day": 24, "spend": 55.65, "leads": 18, "sales_cnt": 0, "sales_sum": 0}, {"day": 25, "spend": 54.73, "leads": 28, "sales_cnt": 0, "sales_sum": 0}, {"day": 26, "spend": 54.6, "leads": 16, "sales_cnt": 0, "sales_sum": 0}, {"day": 27, "spend": 63.93, "leads": 16, "sales_cnt": 0, "sales_sum": 0}, {"day": 28, "spend": 70.47, "leads": 16, "sales_cnt": 0, "sales_sum": 0}, {"day": 29, "spend": 80.02, "leads": 22, "sales_cnt": 0, "sales_sum": 0}, {"day": 30, "spend": 50.68, "leads": 21, "sales_cnt": 0, "sales_sum": 0}]}, "Июль": {"kpi": {"spend": 1452.73, "impressions": 650606, "clicks": 16180, "cpc": 0.20087457360634545, "ctr": 0.02198028454791902, "subs": 372, "leads": 488, "visits": 14096, "target_leads": 366, "lead_conv": 0.75, "sale_conv": 0.028688524590163935, "sales_count": 14, "sales_sum": 18774, "drr": 0.07737988707787366}, "daily": [{"day": 1, "spend": 48.47, "leads": 16, "sales_cnt": 1, "sales_sum": 593}, {"day": 2, "spend": 42.39, "leads": 16, "sales_cnt": 1, "sales_sum": 872}, {"day": 3, "spend": 44.52, "leads": 16, "sales_cnt": 1, "sales_sum": 629}, {"day": 4, "spend": 42.27, "leads": 12, "sales_cnt": 1, "sales_sum": 786}, {"day": 5, "spend": 53.03, "leads": 26, "sales_cnt": 1, "sales_sum": 763}, {"day": 6, "spend": 53.07, "leads": 14, "sales_cnt": 1, "sales_sum": 978}, {"day": 7, "spend": 46.99, "leads": 16, "sales_cnt": 1, "sales_sum": 588}, {"day": 8, "spend": 54.3, "leads": 18, "sales_cnt": 1, "sales_sum": 1566}, {"day": 9, "spend": 57.75, "leads": 15, "sales_cnt": 1, "sales_sum": 625}, {"day": 10, "spend": 51.46, "leads": 10, "sales_cnt": 1, "sales_sum": 4007}, {"day": 11, "spend": 51.37, "leads": 14, "sales_cnt": 1, "sales_sum": 2773}, {"day": 12, "spend": 53.28, "leads": 12, "sales_cnt": 1, "sales_sum": 1032}, {"day": 13, "spend": 51.38, "leads": 23, "sales_cnt": 1, "sales_sum": 1032}, {"day": 14, "spend": 50.57, "leads": 11, "sales_cnt": 1, "sales_sum": 2530}, {"day": 15, "spend": 48.17, "leads": 13, "sales_cnt": 0, "sales_sum": 0}, {"day": 16, "spend": 49.45, "leads": 15, "sales_cnt": 0, "sales_sum": 0}, {"day": 17, "spend": 46.92, "leads": 11, "sales_cnt": 0, "sales_sum": 0}, {"day": 18, "spend": 44.15, "leads": 15, "sales_cnt": 0, "sales_sum": 0}, {"day": 19, "spend": 50.28, "leads": 15, "sales_cnt": 0, "sales_sum": 0}, {"day": 20, "spend": 52.27, "leads": 9, "sales_cnt": 0, "sales_sum": 0}, {"day": 21, "spend": 47.77, "leads": 26, "sales_cnt": 0, "sales_sum": 0}, {"day": 22, "spend": 22.0, "leads": 6, "sales_cnt": 0, "sales_sum": 0}, {"day": 23, "spend": 47.24, "leads": 9, "sales_cnt": 0, "sales_sum": 0}, {"day": 24, "spend": 43.93, "leads": 13, "sales_cnt": 0, "sales_sum": 0}, {"day": 25, "spend": 41.27, "leads": 14, "sales_cnt": 0, "sales_sum": 0}, {"day": 26, "spend": 46.35, "leads": 22, "sales_cnt": 0, "sales_sum": 0}, {"day": 27, "spend": 46.83, "leads": 20, "sales_cnt": 0, "sales_sum": 0}, {"day": 28, "spend": 41.38, "leads": 27, "sales_cnt": 0, "sales_sum": 0}, {"day": 29, "spend": 43.24, "leads": 22, "sales_cnt": 0, "sales_sum": 0}, {"day": 30, "spend": 43.01, "leads": 13, "sales_cnt": 0, "sales_sum": 0}, {"day": 31, "spend": 37.62, "leads": 19, "sales_cnt": 0, "sales_sum": 0}]}, "Август": {"kpi": {"spend": 175.4, "impressions": 159321, "clicks": 1923, "cpc": 0.18691071725645952, "ctr": 0.01851513188055997, "subs": 57, "leads": 64, "visits": 1651, "target_leads": 0, "lead_conv": 0, "sale_conv": 0, "sales_count": 0, "sales_sum": 0, "drr": 0}, "daily": [{"day": 1, "spend": 38.52, "leads": 12, "sales_cnt": 0, "sales_sum": 0}, {"day": 2, "spend": 45.09, "leads": 27, "sales_cnt": 0, "sales_sum": 0}, {"day": 3, "spend": 45.48, "leads": 13, "sales_cnt": 0, "sales_sum": 0}, {"day": 4, "spend": 46.31, "leads": 12, "sales_cnt": 0, "sales_sum": 0}, {"day": 5, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 6, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 7, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 8, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 9, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 10, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 11, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 12, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 13, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 14, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 15, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 16, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 17, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 18, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 19, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 20, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 21, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 22, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 23, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 24, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 25, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 26, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 27, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 28, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 29, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 30, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}, {"day": 31, "spend": 0, "leads": 0, "sales_cnt": 0, "sales_sum": 0}]}};
+const MONTH_ORDER = ["Ноябрь 2025","Декабрь 2025","Январь 2026","Февраль 2026","Март","Апрель","Май","Июнь","Июль","Август"];
+
+const MONTH_NUM = {
+  "Ноябрь 2025": [11,2025], "Декабрь 2025": [12,2025], "Январь 2026": [1,2026], "Февраль 2026": [2,2026],
+  "Март": [3,2026], "Апрель": [4,2026], "Май": [5,2026], "Июнь": [6,2026], "Июль": [7,2026], "Август": [8,2026],
+};
+function formatDate(monthName, day){
+  const [mo, yr] = MONTH_NUM[monthName];
+  return String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + yr;
+}
+let currentMonthName = '';
+
+const fmtMoney = v => '$' + Math.round(v).toLocaleString('ru-RU');
+const fmtPct = v => (v*100).toFixed(2).replace('.', ',') + '%';
+const fmtInt = v => Math.round(v).toLocaleString('ru-RU');
+
+function trimTrailingEmpty(daily){
+  const arr = daily.slice();
+  while (arr.length && arr[arr.length-1].spend === 0 && arr[arr.length-1].leads === 0) arr.pop();
+  return arr.length ? arr : daily;
+}
+
+function render(monthName){
+  currentMonthName = monthName;
+  const m = DATA[monthName];
+  const k = m.kpi;
+  const hasSales = k.sales_count > 0;
+
+  document.getElementById('k-spend').textContent = fmtMoney(k.spend);
+  document.getElementById('k-spend-sub').textContent = `${fmtMoney(k.spend / (m.daily.length||1))} / день в среднем`;
+  document.getElementById('k-impr').textContent = fmtInt(k.impressions);
+  document.getElementById('k-leads').textContent = fmtInt(k.leads);
+  document.getElementById('k-leads-sub').textContent = k.target_leads ? `${fmtInt(k.target_leads)} целевых · ${fmtPct(k.lead_conv)}` : 'нет данных по целевым';
+  document.getElementById('k-sales').textContent = hasSales ? fmtInt(k.sales_count) : '—';
+  document.getElementById('k-sales-sub').textContent = hasSales ? fmtPct(k.sale_conv) + ' конверсия' : 'нет данных';
+  document.getElementById('k-salessum').textContent = hasSales ? fmtMoney(k.sales_sum) : '—';
+  document.getElementById('k-salessum-sub').textContent = hasSales ? `${fmtInt(k.sales_count)} продаж за месяц` : 'нет данных о продажах';
+  document.getElementById('k-cpc').textContent = '$' + k.cpc.toFixed(2);
+  document.getElementById('k-saleconv').textContent = hasSales ? fmtPct(k.sale_conv) : '—';
+  document.getElementById('k-drr').textContent = hasSales ? fmtPct(k.drr) : '—';
+
+  const daily = trimTrailingEmpty(m.daily);
+  document.getElementById('days-note').textContent = `${daily.length} дн. с данными`;
+  document.getElementById('chart-sub').textContent = `Расход и заявки, ${monthName}`;
+
+  document.getElementById('day-tiles').style.display = 'none';
+  document.getElementById('day-panel-sub').textContent = 'Нажми на график выше, чтобы увидеть цифры за конкретный день';
+  document.getElementById('day-panel-sub').style.display = 'block';
+
+  currentDaily = daily;
+  buildSpendChart(daily);
+  buildLeadsChart(daily);
+}
+
+let currentDaily = [];
+
+function selectDay(daily, i){
+  const d = daily[i];
+  document.getElementById('day-panel-sub').style.display = 'none';
+  document.getElementById('day-tiles').style.display = 'grid';
+  document.getElementById('d-day').textContent = formatDate(currentMonthName, d.day);
+  document.getElementById('d-spend').textContent = '$' + d.spend.toFixed(2);
+  document.getElementById('d-leads').textContent = fmtInt(d.leads);
+  document.getElementById('d-sales').textContent = (d.sales_cnt || 0) > 0
+    ? `${d.sales_cnt} · ${fmtMoney(d.sales_sum||0)}`
+    : '0';
+}
+
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function clearSvg(svg){ while (svg.firstChild) svg.removeChild(svg.firstChild); }
+
+function buildSpendChart(daily){
+  const svg = document.getElementById('spend-chart');
+  clearSvg(svg);
+  if (!daily.length) return;
+  const W = 560, H = 220, padL = 34, padR = 8, padT = 10, padB = 22;
+  const innerW = W - padL - padR, innerH = H - padT - padB;
+  const vals = daily.map(d => d.spend);
+  const max = Math.max(10, Math.ceil(Math.max(...vals) / 10) * 10);
+  const min = 0;
+  const n = daily.length;
+  const x = i => padL + (n > 1 ? innerW * i / (n - 1) : innerW/2);
+  const y = v => padT + innerH - (innerH * (v - min) / (max - min));
+
+  const steps = 4;
+  for (let s = 0; s <= steps; s++){
+    const v = min + (max - min) * s / steps;
+    const gy = y(v);
+    svg.appendChild(el('line', {x1:padL, x2:W-padR, y1:gy, y2:gy, class:'grid-line'}));
+    const t = el('text', {x:2, y:gy+3, class:'axis-label'});
+    t.textContent = Math.round(v);
+    svg.appendChild(t);
+  }
+  daily.forEach((d,i) => {
+    if (i % 5 === 0 || i === n-1){
+      const t = el('text', {x:x(i), y:H-4, class:'axis-label', 'text-anchor':'middle'});
+      t.textContent = d.day;
+      svg.appendChild(t);
+    }
+  });
+
+  const pathPts = daily.map((d,i) => `${x(i)},${y(d.spend)}`).join(' L ');
+  const area = `M ${x(0)},${y(min)} L ${pathPts} L ${x(n-1)},${y(min)} Z`;
+  svg.appendChild(el('path', {d: area, class:'area-fill'}));
+  svg.appendChild(el('path', {d: 'M ' + pathPts, class:'line-path'}));
+
+  const last = daily[n-1];
+  svg.appendChild(el('circle', {cx:x(n-1), cy:y(last.spend), r:4, class:'end-dot'}));
+
+  const hoverLine = el('line', {x1:0,x2:0,y1:padT,y2:H-padB, class:'hover-line'});
+  const hoverDot = el('circle', {r:4, class:'hover-dot'});
+  svg.appendChild(hoverLine); svg.appendChild(hoverDot);
+  const tip = document.getElementById('spend-tip');
+  const hitArea = el('rect', {x:padL, y:padT, width:innerW, height:innerH, fill:'transparent'});
+  svg.appendChild(hitArea);
+
+  hitArea.addEventListener('mousemove', (e) => {
+    const rect = svg.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (W / rect.width);
+    let i = Math.round((mx - padL) / innerW * (n - 1));
+    i = Math.max(0, Math.min(n - 1, i));
+    const d = daily[i];
+    hoverLine.setAttribute('x1', x(i)); hoverLine.setAttribute('x2', x(i)); hoverLine.style.opacity = 1;
+    hoverDot.setAttribute('cx', x(i)); hoverDot.setAttribute('cy', y(d.spend)); hoverDot.style.opacity = 1;
+    tip.style.left = ((x(i)/W)*rect.width) + 'px'; tip.style.top = ((y(d.spend)/H)*rect.height) + 'px';
+    tip.style.opacity = 1;
+    tip.textContent = `${formatDate(currentMonthName, d.day)} — $${d.spend.toFixed(2)}`;
+  });
+  hitArea.addEventListener('mouseleave', () => { hoverLine.style.opacity=0; hoverDot.style.opacity=0; tip.style.opacity=0; });
+  hitArea.addEventListener('click', (e) => {
+    const rect = svg.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (W / rect.width);
+    let i = Math.round((mx - padL) / innerW * (n - 1));
+    i = Math.max(0, Math.min(n - 1, i));
+    selectDay(daily, i);
+  });
+  svg.style.cursor = 'pointer';
+}
+
+function buildLeadsChart(daily){
+  const svg = document.getElementById('leads-chart');
+  clearSvg(svg);
+  if (!daily.length) return;
+  const W = 420, H = 220, padL = 24, padR = 6, padT = 10, padB = 22;
+  const innerW = W - padL - padR, innerH = H - padT - padB;
+  const n = daily.length;
+  const vals = daily.map(d => d.leads);
+  const max = Math.max(5, Math.ceil(Math.max(...vals) / 5) * 5);
+  const bw = innerW / n;
+  const y = v => padT + innerH - (innerH * v / max);
+
+  const steps = 3;
+  for (let s = 0; s <= steps; s++){
+    const v = max * s / steps;
+    const gy = y(v);
+    svg.appendChild(el('line', {x1:padL, x2:W-padR, y1:gy, y2:gy, class:'grid-line'}));
+    const t = el('text', {x:2, y:gy+3, class:'axis-label'});
+    t.textContent = Math.round(v);
+    svg.appendChild(t);
+  }
+
+  const tip = document.getElementById('leads-tip');
+  daily.forEach((d,i) => {
+    const bx = padL + i * bw;
+    const bh = innerH * d.leads / max;
+    const by = padT + innerH - bh;
+    const rectW = Math.max(bw - 2, 1.2);
+    const bar = el('rect', {x:bx + (bw-rectW)/2, y:by, width:rectW, height:bh, rx:1.5, class:'bar'});
+    svg.appendChild(bar);
+    bar.addEventListener('mousemove', (e) => {
+      const rect = svg.getBoundingClientRect();
+      tip.style.left = (((bx+bw/2)/W)*rect.width) + 'px'; tip.style.top = ((by/H)*rect.height) + 'px';
+      tip.style.opacity = 1;
+      tip.textContent = `${formatDate(currentMonthName, d.day)} — ${d.leads} заявок`;
+    });
+    bar.addEventListener('mouseleave', () => tip.style.opacity = 0);
+    bar.style.cursor = 'pointer';
+    bar.addEventListener('click', () => selectDay(daily, i));
+    if (i % 10 === 0 || i === n-1){
+      const t = el('text', {x:bx+bw/2, y:H-4, class:'axis-label', 'text-anchor':'middle'});
+      t.textContent = d.day;
+      svg.appendChild(t);
+    }
+  });
+}
+
+const select = document.getElementById('month-select');
+MONTH_ORDER.forEach(m => {
+  const opt = document.createElement('option');
+  opt.value = m; opt.textContent = m;
+  select.appendChild(opt);
+});
+select.value = 'Июль';
+select.addEventListener('change', () => render(select.value));
+render(select.value);
+</script>
