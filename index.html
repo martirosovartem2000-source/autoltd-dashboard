@@ -97,11 +97,16 @@ select#month-select{
   background-repeat:no-repeat;background-position:right 14px center;
 }
 select#month-select:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
-.platform-toggle{display:flex;gap:6px;}
+.platform-toggle{display:flex;gap:8px;}
 .ptab{
-  font-family:'Rajdhani';font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;
+  font-family:'Rajdhani';font-weight:600;font-size:15px;letter-spacing:.04em;text-transform:uppercase;
   color:var(--ink-3);background:var(--bezel);border:1px solid var(--line);border-radius:6px;
-  padding:6px 14px;cursor:pointer;
+  padding:9px 20px;cursor:pointer;
+}
+@media (max-width:760px){
+  .month-picker{width:100%;align-items:stretch;}
+  .platform-toggle{width:100%;}
+  .ptab{flex:1;font-size:17px;padding:14px 10px;}
 }
 .ptab.active{color:var(--amber);border-color:var(--amber-dim);background:#1a1610;}
 .ptab:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
@@ -121,27 +126,27 @@ select#month-select:focus-visible{outline:2px solid var(--amber);outline-offset:
   opacity:.35;
 }
 .kpi .label{
-  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
+  font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
   font-weight:600;margin-bottom:10px;
 }
 .kpi .value{
-  font-family:'Rajdhani';font-weight:700;font-size:32px;line-height:1;letter-spacing:.02em;
+  font-family:'Rajdhani';font-weight:700;font-size:36px;line-height:1;letter-spacing:.02em;
   font-variant-numeric:tabular-nums;color:var(--ink);
 }
-.kpi .sub{font-size:12px;color:var(--ink-2);margin-top:6px;font-variant-numeric:tabular-nums;}
+.kpi .sub{font-size:13px;color:var(--ink-2);margin-top:6px;font-variant-numeric:tabular-nums;}
 .kpi.accent .value{color:var(--red);text-shadow:0 0 18px var(--red-glow);}
 .kpi.accent{border-color:#3a1512;}
 
-.row2{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.row2{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}
 @media (max-width:760px){.row2{grid-template-columns:repeat(2,1fr);}}
 .mini{
   background:var(--bezel);border:1px solid var(--line-soft);border-radius:8px;padding:12px 16px;
 }
 .mini .label{
-  font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);font-weight:600;margin-bottom:6px;
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);font-weight:600;margin-bottom:6px;
 }
 .mini .value{
-  font-family:'Rajdhani';font-weight:600;font-size:19px;font-variant-numeric:tabular-nums;color:var(--ink);
+  font-family:'Rajdhani';font-weight:600;font-size:22px;font-variant-numeric:tabular-nums;color:var(--ink);
 }
 
 .panel{
@@ -154,8 +159,7 @@ select#month-select:focus-visible{outline:2px solid var(--amber);outline-offset:
   letter-spacing:.03em;color:var(--ink);
 }
 .panel .panel-sub{font-size:12.5px;color:var(--ink-2);margin:0 0 10px;}
-.charts{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;}
-@media (max-width:820px){.charts{grid-template-columns:1fr;}}
+.charts{display:grid;grid-template-columns:1fr;gap:18px;}
 
 svg{overflow:visible;display:block;width:100%;height:auto;}
 .grid-line{stroke:var(--line-soft);stroke-width:1;}
@@ -164,7 +168,6 @@ svg{overflow:visible;display:block;width:100%;height:auto;}
 .line-path{fill:none;stroke:var(--amber);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
   filter:drop-shadow(0 0 6px var(--amber-glow));}
 .end-dot{fill:var(--amber);stroke:var(--panel);stroke-width:2;filter:drop-shadow(0 0 6px var(--amber-glow));}
-.bar{fill:var(--teal);filter:drop-shadow(0 0 4px var(--teal-glow));}
 .hover-line{stroke:var(--ink-3);stroke-width:1;stroke-dasharray:3 3;opacity:0;}
 .hover-dot{fill:var(--amber);stroke:var(--panel);stroke-width:2;opacity:0;}
 .tooltip{
@@ -210,27 +213,23 @@ svg{overflow:visible;display:block;width:100%;height:auto;}
 
   <div class="row2">
     <div class="mini"><div class="label">Показы</div><div class="value" id="k-impr">—</div></div>
-    <div class="mini"><div class="label">CPC средний</div><div class="value" id="k-cpc">—</div></div>
+    <div class="mini"><div class="label">Стоимость клика</div><div class="value" id="k-cpc">—</div></div>
+    <div class="mini"><div class="label">CAC</div><div class="value" id="k-cac">—</div></div>
     <div class="mini"><div class="label">Конв. в продажу</div><div class="value" id="k-saleconv">—</div></div>
     <div class="mini"><div class="label">ДРР</div><div class="value" id="k-drr">—</div></div>
   </div>
 
   <div class="panel">
     <h2>Динамика по дням</h2>
-    <p class="panel-sub" id="chart-sub">Расход и заявки</p>
+    <p class="panel-sub" id="chart-sub">Расход</p>
     <div class="charts">
       <div class="chart-wrap" id="spend-wrap">
         <svg id="spend-chart" viewBox="0 0 560 220" preserveAspectRatio="none"></svg>
         <div class="tooltip" id="spend-tip"></div>
       </div>
-      <div class="chart-wrap" id="leads-wrap">
-        <svg id="leads-chart" viewBox="0 0 420 220" preserveAspectRatio="none"></svg>
-        <div class="tooltip" id="leads-tip"></div>
-      </div>
     </div>
     <div class="foot">
-      <span>Расход, $/день · нажми на точку или столбик</span>
-      <span>Заявки/день</span>
+      <span>Расход, $/день · нажми на точку</span>
     </div>
   </div>
 
@@ -241,6 +240,7 @@ svg{overflow:visible;display:block;width:100%;height:auto;}
       <div class="mini"><div class="label">Дата</div><div class="value" id="d-day">—</div></div>
       <div class="mini"><div class="label">Расход</div><div class="value" id="d-spend">—</div></div>
       <div class="mini"><div class="label">Заявки</div><div class="value" id="d-leads">—</div></div>
+      <div class="mini"><div class="label">Стоимость заявки</div><div class="value" id="d-cpl">—</div></div>
       <div class="mini"><div class="label">Продажи</div><div class="value" id="d-sales">—</div></div>
     </div>
   </div>
@@ -295,12 +295,13 @@ function render(monthName){
   document.getElementById('k-salessum').textContent = hasSales ? fmtMoney(k.sales_sum) : '—';
   document.getElementById('k-salessum-sub').textContent = hasSales ? `${fmtInt(k.sales_count)} продаж за месяц` : 'нет данных о продажах';
   document.getElementById('k-cpc').textContent = '$' + k.cpc.toFixed(2);
+  document.getElementById('k-cac').textContent = hasSales ? '$' + (k.spend / k.sales_count).toFixed(2) : '—';
   document.getElementById('k-saleconv').textContent = hasSales ? fmtPct(k.sale_conv) : '—';
   document.getElementById('k-drr').textContent = hasSales ? fmtPct(k.drr) : '—';
 
   const daily = trimTrailingEmpty(m.daily);
   document.getElementById('days-note').textContent = `${daily.length} дн. с данными`;
-  document.getElementById('chart-sub').textContent = `Расход и заявки, ${monthName}`;
+  document.getElementById('chart-sub').textContent = `Расход, ${monthName}`;
 
   document.getElementById('day-tiles').style.display = 'none';
   document.getElementById('day-panel-sub').textContent = 'Нажми на график выше, чтобы увидеть цифры за конкретный день';
@@ -308,7 +309,6 @@ function render(monthName){
 
   currentDaily = daily;
   buildSpendChart(daily);
-  buildLeadsChart(daily);
 }
 
 let currentDaily = [];
@@ -320,6 +320,7 @@ function selectDay(daily, i){
   document.getElementById('d-day').textContent = formatDate(currentMonthName, d.day);
   document.getElementById('d-spend').textContent = '$' + d.spend.toFixed(2);
   document.getElementById('d-leads').textContent = fmtInt(d.leads);
+  document.getElementById('d-cpl').textContent = d.leads > 0 ? '$' + (d.spend / d.leads).toFixed(2) : '—';
   document.getElementById('d-sales').textContent = (d.sales_cnt || 0) > 0
     ? `${d.sales_cnt} · ${fmtMoney(d.sales_sum||0)}`
     : '0';
@@ -399,53 +400,6 @@ function buildSpendChart(daily){
     selectDay(daily, i);
   });
   svg.style.cursor = 'pointer';
-}
-
-function buildLeadsChart(daily){
-  const svg = document.getElementById('leads-chart');
-  clearSvg(svg);
-  if (!daily.length) return;
-  const W = 420, H = 220, padL = 24, padR = 6, padT = 10, padB = 22;
-  const innerW = W - padL - padR, innerH = H - padT - padB;
-  const n = daily.length;
-  const vals = daily.map(d => d.leads);
-  const max = Math.max(5, Math.ceil(Math.max(...vals) / 5) * 5);
-  const bw = innerW / n;
-  const y = v => padT + innerH - (innerH * v / max);
-
-  const steps = 3;
-  for (let s = 0; s <= steps; s++){
-    const v = max * s / steps;
-    const gy = y(v);
-    svg.appendChild(el('line', {x1:padL, x2:W-padR, y1:gy, y2:gy, class:'grid-line'}));
-    const t = el('text', {x:2, y:gy+3, class:'axis-label'});
-    t.textContent = Math.round(v);
-    svg.appendChild(t);
-  }
-
-  const tip = document.getElementById('leads-tip');
-  daily.forEach((d,i) => {
-    const bx = padL + i * bw;
-    const bh = innerH * d.leads / max;
-    const by = padT + innerH - bh;
-    const rectW = Math.max(bw - 2, 1.2);
-    const bar = el('rect', {x:bx + (bw-rectW)/2, y:by, width:rectW, height:bh, rx:1.5, class:'bar'});
-    svg.appendChild(bar);
-    bar.addEventListener('mousemove', (e) => {
-      const rect = svg.getBoundingClientRect();
-      tip.style.left = (((bx+bw/2)/W)*rect.width) + 'px'; tip.style.top = ((by/H)*rect.height) + 'px';
-      tip.style.opacity = 1;
-      tip.textContent = `${formatDate(currentMonthName, d.day)} — ${d.leads} заявок`;
-    });
-    bar.addEventListener('mouseleave', () => tip.style.opacity = 0);
-    bar.style.cursor = 'pointer';
-    bar.addEventListener('click', () => selectDay(daily, i));
-    if (i % 10 === 0 || i === n-1){
-      const t = el('text', {x:bx+bw/2, y:H-4, class:'axis-label', 'text-anchor':'middle'});
-      t.textContent = d.day;
-      svg.appendChild(t);
-    }
-  });
 }
 
 const select = document.getElementById('month-select');
