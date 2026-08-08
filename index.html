@@ -138,8 +138,9 @@ select#month-select:focus-visible{outline:2px solid var(--amber);outline-offset:
 .kpi.accent .value{color:var(--red);text-shadow:0 0 18px var(--red-glow);}
 .kpi.accent{border-color:#3a1512;}
 
-.row2{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}
-@media (max-width:760px){.row2{grid-template-columns:repeat(2,1fr);}}
+.row2{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:28px;}
+@media (max-width:900px){.row2{grid-template-columns:repeat(3,1fr);}}
+@media (max-width:560px){.row2{grid-template-columns:repeat(2,1fr);}}
 .mini{
   background:var(--bezel);border:1px solid var(--line-soft);border-radius:8px;padding:12px 16px;
 }
@@ -217,8 +218,9 @@ svg{overflow:visible;display:block;width:100%;height:auto;}
 
   <div class="row2">
     <div class="mini"><div class="label">Показы</div><div class="value" id="k-impr">—</div></div>
-    <div class="mini"><div class="label">Стоимость клика</div><div class="value" id="k-cpc">—</div></div>
+    <div class="mini"><div class="label">Стоимость лида</div><div class="value" id="k-cpl">—</div></div>
     <div class="mini"><div class="label">CAC</div><div class="value" id="k-cac">—</div><div class="hint">стоимость привлечения 1 клиента</div></div>
+    <div class="mini"><div class="label">Подписчики</div><div class="value" id="k-subs">—</div></div>
     <div class="mini"><div class="label">Конв. в продажу</div><div class="value" id="k-saleconv">—</div></div>
     <div class="mini"><div class="label">ДРР</div><div class="value" id="k-drr">—</div></div>
   </div>
@@ -298,8 +300,9 @@ function render(monthName){
   document.getElementById('k-sales-sub').textContent = hasSales ? fmtPct(k.sale_conv) + ' конверсия' : 'нет данных';
   document.getElementById('k-salessum').textContent = hasSales ? fmtMoney(k.sales_sum) : '—';
   document.getElementById('k-salessum-sub').textContent = hasSales ? `${fmtInt(k.sales_count)} продаж за месяц` : 'нет данных о продажах';
-  document.getElementById('k-cpc').textContent = '$' + k.cpc.toFixed(2);
+  document.getElementById('k-cpl').textContent = k.leads > 0 ? '$' + (k.spend / k.leads).toFixed(2) : '—';
   document.getElementById('k-cac').textContent = hasSales ? '$' + (k.spend / k.sales_count).toFixed(2) : '—';
+  document.getElementById('k-subs').textContent = (k.subs != null) ? fmtInt(k.subs) : '—';
   document.getElementById('k-saleconv').textContent = hasSales ? fmtPct(k.sale_conv) : '—';
   document.getElementById('k-drr').textContent = hasSales ? fmtPct(k.drr) : '—';
 
