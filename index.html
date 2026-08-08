@@ -149,6 +149,9 @@ select#month-select:focus-visible{outline:2px solid var(--amber);outline-offset:
 .mini .value{
   font-family:'Rajdhani';font-weight:600;font-size:22px;font-variant-numeric:tabular-nums;color:var(--ink);
 }
+.mini .hint{
+  font-size:9.5px;color:var(--ink-3);font-weight:500;text-transform:none;letter-spacing:.01em;margin-top:4px;
+}
 
 .panel{
   background:linear-gradient(180deg, var(--panel-2) 0%, var(--panel) 100%);
@@ -215,7 +218,7 @@ svg{overflow:visible;display:block;width:100%;height:auto;}
   <div class="row2">
     <div class="mini"><div class="label">Показы</div><div class="value" id="k-impr">—</div></div>
     <div class="mini"><div class="label">Стоимость клика</div><div class="value" id="k-cpc">—</div></div>
-    <div class="mini"><div class="label">CAC</div><div class="value" id="k-cac">—</div></div>
+    <div class="mini"><div class="label">CAC</div><div class="value" id="k-cac">—</div><div class="hint">стоимость привлечения 1 клиента</div></div>
     <div class="mini"><div class="label">Конв. в продажу</div><div class="value" id="k-saleconv">—</div></div>
     <div class="mini"><div class="label">ДРР</div><div class="value" id="k-drr">—</div></div>
   </div>
