@@ -362,6 +362,7 @@ function currentSrc(){ return currentPlatform === 'fb' ? DATA_FB : DATA_TT; }
 
 const METRICS = {
   spend: {label: 'Расход', unit: '$/день', fmt: v => '$' + v.toFixed(2)},
+  impressions: {label: 'Показы', unit: 'шт/день', fmt: v => Math.round(v).toLocaleString('ru-RU')},
   leads: {label: 'Заявки', unit: 'шт/день', fmt: v => Math.round(v).toLocaleString('ru-RU')},
   sales_cnt: {label: 'Продажи', unit: 'шт/день', fmt: v => Math.round(v).toLocaleString('ru-RU')},
   sales_sum: {label: 'Сумма продаж', unit: '$/день', fmt: v => '$' + Math.round(v).toLocaleString('ru-RU')},
