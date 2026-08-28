@@ -218,6 +218,10 @@ select#metric-select:focus-visible{outline:2px solid var(--brand);outline-offset
 }
 .fb-table tbody tr:hover td{background:var(--bezel);}
 .fb-name{color:var(--ink);font-weight:600;}
+.fb-table th .th-hint{
+  display:block;margin-top:3px;max-width:112px;white-space:normal;
+  font-size:9.5px;font-weight:500;letter-spacing:.01em;text-transform:none;color:var(--ink-3);
+}
 </style><div class="page">
 
   <div class="masthead">
@@ -280,6 +284,7 @@ select#metric-select:focus-visible{outline:2px solid var(--brand);outline-offset
             <th>Заявки</th>
             <th>Цена лида</th>
             <th>Продажи</th>
+            <th>CAC<span class="th-hint">стоимость привлечения 1 клиента</span></th>
             <th>Сумма продаж</th>
             <th>ДРР</th>
           </tr>
@@ -635,13 +640,15 @@ function renderComparePanel(){
   const tbody = document.getElementById('compare-tbody');
   tbody.innerHTML = '';
   if (!rows.length){
-    tbody.innerHTML = '<tr><td colspan="7" class="fb-sub">Нет данных.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="fb-sub">Нет данных.</td></tr>';
     return;
   }
   rows.forEach((r, i) => {
     const prev = i > 0 ? rows[i-1] : null;
     const cpl = r.leads > 0 ? r.spend / r.leads : null;
     const prevCpl = prev && prev.leads > 0 ? prev.spend / prev.leads : null;
+    const cac = r.sales > 0 ? r.spend / r.sales : null;
+    const prevCac = prev && prev.sales > 0 ? prev.spend / prev.sales : null;
     const drr = r.salesSum > 0 ? r.spend / r.salesSum : null;
     const prevDrr = prev && prev.salesSum > 0 ? prev.spend / prev.salesSum : null;
     const tr = document.createElement('tr');
@@ -651,6 +658,7 @@ function renderComparePanel(){
       <td>${compareTrendCell(r.leads, prev ? prev.leads : null, true, fmtInt)}</td>
       <td>${compareTrendCell(cpl, prevCpl, false, fmtMoney2)}</td>
       <td>${compareTrendCell(r.sales, prev ? prev.sales : null, true, fmtInt)}</td>
+      <td>${compareTrendCell(cac, prevCac, false, fmtMoney2)}</td>
       <td>${compareTrendCell(r.salesSum, prev ? prev.salesSum : null, true, fmtMoney)}</td>
       <td>${compareTrendCell(drr, prevDrr, false, fmtPct)}</td>
     `;
