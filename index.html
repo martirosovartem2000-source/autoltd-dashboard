@@ -143,6 +143,7 @@ select#month-select:focus-visible{outline:2px solid var(--brand);outline-offset:
 .kpi.accent{border-color:#f2c6cd;}
 
 .row2{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:28px;}
+#kpi-row2{grid-template-columns:repeat(4,1fr);}
 @media (max-width:900px){.row2{grid-template-columns:repeat(3,1fr);}}
 @media (max-width:560px){.row2{grid-template-columns:repeat(2,1fr);}}
 .mini{
@@ -255,10 +256,11 @@ select#metric-select:focus-visible{outline:2px solid var(--brand);outline-offset
     <div class="kpi accent"><div class="label">Сумма продаж</div><div class="value" id="k-salessum">—</div><div class="sub" id="k-salessum-sub">—</div></div>
   </div>
 
-  <div class="row2">
+  <div class="row2" id="kpi-row2">
     <div class="mini"><div class="label">Показы</div><div class="value" id="k-impr">—</div></div>
     <div class="mini"><div class="label">Стоимость лида</div><div class="value" id="k-cpl">—</div></div>
     <div class="mini"><div class="label">CAC</div><div class="value" id="k-cac">—</div><div class="hint">стоимость привлечения 1 клиента</div></div>
+    <div class="mini"><div class="label">Средний чек</div><div class="value" id="k-aov">—</div><div class="hint">выручка с одной продажи</div></div>
     <div class="mini"><div class="label">Подписчики</div><div class="value" id="k-subs">—</div></div>
     <div class="mini"><div class="label">Конв. в продажу</div><div class="value" id="k-saleconv">—</div></div>
     <div class="mini"><div class="label">ДРР</div><div class="value" id="k-drr">—</div></div>
@@ -286,6 +288,7 @@ select#metric-select:focus-visible{outline:2px solid var(--brand);outline-offset
             <th>Продажи</th>
             <th>CAC<span class="th-hint">стоимость привлечения 1 клиента</span></th>
             <th>Сумма продаж</th>
+            <th>Средний чек</th>
             <th>ДРР</th>
           </tr>
         </thead>
@@ -390,6 +393,7 @@ function render(monthName){
   document.getElementById('k-salessum-sub').textContent = hasSales ? `${fmtInt(k.sales_count)} продаж за месяц` : 'нет данных о продажах';
   document.getElementById('k-cpl').textContent = k.leads > 0 ? '$' + (k.spend / k.leads).toFixed(2) : '—';
   document.getElementById('k-cac').textContent = hasSales ? '$' + (k.spend / k.sales_count).toFixed(2) : '—';
+  document.getElementById('k-aov').textContent = hasSales ? '$' + (k.sales_sum / k.sales_count).toFixed(2) : '—';
   document.getElementById('k-subs').textContent = (k.subs != null) ? fmtInt(k.subs) : '—';
   document.getElementById('k-saleconv').textContent = hasSales ? fmtPct(k.sale_conv) : '—';
   document.getElementById('k-drr').textContent = hasSales ? fmtPct(k.drr) : '—';
@@ -638,7 +642,7 @@ function renderComparePanel(){
   const tbody = document.getElementById('compare-tbody');
   tbody.innerHTML = '';
   if (!rows.length){
-    tbody.innerHTML = '<tr><td colspan="8" class="fb-sub">Нет данных.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="fb-sub">Нет данных.</td></tr>';
     return;
   }
   rows.forEach((r, i) => {
@@ -647,6 +651,8 @@ function renderComparePanel(){
     const prevCpl = prev && prev.leads > 0 ? prev.spend / prev.leads : null;
     const cac = r.sales > 0 ? r.spend / r.sales : null;
     const prevCac = prev && prev.sales > 0 ? prev.spend / prev.sales : null;
+    const aov = r.sales > 0 ? r.salesSum / r.sales : null;
+    const prevAov = prev && prev.sales > 0 ? prev.salesSum / prev.sales : null;
     const drr = r.salesSum > 0 ? r.spend / r.salesSum : null;
     const prevDrr = prev && prev.salesSum > 0 ? prev.spend / prev.salesSum : null;
     const tr = document.createElement('tr');
@@ -658,6 +664,7 @@ function renderComparePanel(){
       <td>${compareTrendCell(r.sales, prev ? prev.sales : null, true, fmtInt)}</td>
       <td>${compareTrendCell(cac, prevCac, false, fmtMoney2)}</td>
       <td>${compareTrendCell(r.salesSum, prev ? prev.salesSum : null, true, fmtMoney)}</td>
+      <td>${compareTrendCell(aov, prevAov, true, fmtMoney2)}</td>
       <td>${compareTrendCell(drr, prevDrr, false, fmtPct)}</td>
     `;
     tbody.appendChild(tr);
