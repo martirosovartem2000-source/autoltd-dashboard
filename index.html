@@ -117,6 +117,7 @@ select#month-select:focus-visible{outline:2px solid var(--brand);outline-offset:
 .compare-btn:focus-visible{outline:2px solid var(--brand);outline-offset:1px;}
 @media (max-width:760px){.compare-btn{width:100%;}}
 
+#kpi-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;}
 @media (max-width:760px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
 
@@ -253,7 +254,7 @@ select#metric-select:focus-visible{outline:2px solid var(--brand);outline-offset
     </div>
   </div>
 
-  <div class="kpi-grid">
+  <div class="kpi-grid" id="kpi-grid">
     <div class="kpi"><div class="label">Бюджет</div><div class="value" id="k-spend">—</div><div class="sub" id="k-spend-sub">—</div></div>
     <div class="kpi"><div class="label">Заявки</div><div class="value" id="k-leads">—</div><div class="sub" id="k-leads-sub">—</div></div>
     <div class="kpi accent"><div class="label">Продажи</div><div class="value" id="k-sales">—</div><div class="sub" id="k-sales-sub">—</div></div>
@@ -265,6 +266,9 @@ select#metric-select:focus-visible{outline:2px solid var(--brand);outline-offset
     <div class="mini"><div class="label">Стоимость лида</div><div class="value" id="k-cpl">—</div></div>
     <div class="mini"><div class="label">Посещение профиля</div><div class="value" id="k-visits">—</div></div>
     <div class="mini"><div class="label">Цена посещения</div><div class="value" id="k-vpc">—</div><div class="hint">расход на один визит в профиль</div></div>
+    <div class="mini"><div class="label">Клики</div><div class="value" id="k-clicks">—</div></div>
+    <div class="mini"><div class="label">CTR</div><div class="value" id="k-ctr">—</div></div>
+    <div class="mini"><div class="label">Цена клика</div><div class="value" id="k-cpclick">—</div></div>
     <div class="mini"><div class="label">CAC</div><div class="value" id="k-cac">—</div><div class="hint">стоимость привлечения 1 клиента</div></div>
     <div class="mini"><div class="label">Средний чек</div><div class="value" id="k-aov">—</div><div class="hint">выручка с одной продажи</div></div>
     <div class="mini"><div class="label">Подписчики</div><div class="value" id="k-subs">—</div></div>
@@ -402,14 +406,25 @@ function render(monthName){
   document.getElementById('k-salessum').textContent = hasSales ? fmtMoney(k.sales_sum) : '—';
   document.getElementById('k-salessum-sub').textContent = hasSales ? `${fmtInt(k.sales_count)} продаж за месяц` : 'нет данных о продажах';
   document.getElementById('k-cpl').textContent = k.leads > 0 ? '$' + (k.spend / k.leads).toFixed(2) : '—';
-  // Кампании на трафик не дают заявок, кампании на сообщения не дают визитов:
-  // показываем только те плитки, за которыми стоят реальные числа.
-  const hasVisits = (k.visits || 0) > 0;
+  // Трафиковые кампании не дают ни заявок, ни продаж — вся воронка у них пустая.
+  // Решаем по всему срезу, а не по месяцу: иначе в месяц без продаж пропадали бы
+  // плитки у обычных кампаний, где продажи просто ещё не занесли.
+  const srcAll = currentSrc();
+  const sliceLeads = Object.keys(srcAll).reduce((a, mn) => a + (srcAll[mn].kpi.leads || 0), 0);
+  const reachOnly = sliceLeads === 0;
+
   document.getElementById('k-visits').textContent = fmtInt(k.visits || 0);
-  document.getElementById('k-vpc').textContent = hasVisits ? '$' + (k.spend / k.visits).toFixed(2) : '—';
-  document.getElementById('k-visits').closest('.mini').style.display = hasVisits ? '' : 'none';
-  document.getElementById('k-vpc').closest('.mini').style.display = hasVisits ? '' : 'none';
-  document.getElementById('k-cpl').closest('.mini').style.display = k.leads > 0 ? '' : 'none';
+  document.getElementById('k-vpc').textContent = (k.visits || 0) > 0 ? '$' + (k.spend / k.visits).toFixed(2) : '—';
+  document.getElementById('k-clicks').textContent = fmtInt(k.clicks || 0);
+  document.getElementById('k-ctr').textContent = k.ctr ? fmtPct(k.ctr) : '—';
+  document.getElementById('k-cpclick').textContent = (k.clicks || 0) > 0 ? '$' + (k.spend / k.clicks).toFixed(2) : '—';
+
+  const show = (id, on) => { document.getElementById(id).closest('.kpi, .mini').style.display = on ? '' : 'none'; };
+  // воронка: заявки, продажи и всё, что из них считается
+  ['k-leads', 'k-sales', 'k-salessum', 'k-cpl', 'k-cac', 'k-aov', 'k-subs', 'k-saleconv', 'k-drr']
+    .forEach(id => show(id, !reachOnly));
+  // охват: то, что заполнено в таблице у трафика
+  ['k-visits', 'k-vpc', 'k-clicks', 'k-ctr', 'k-cpclick'].forEach(id => show(id, reachOnly));
   document.getElementById('k-cac').textContent = hasSales ? '$' + (k.spend / k.sales_count).toFixed(2) : '—';
   document.getElementById('k-aov').textContent = hasSales ? '$' + (k.sales_sum / k.sales_count).toFixed(2) : '—';
   document.getElementById('k-subs').textContent = (k.subs != null) ? fmtInt(k.subs) : '—';
