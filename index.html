@@ -263,6 +263,8 @@ select#metric-select:focus-visible{outline:2px solid var(--brand);outline-offset
   <div class="row2" id="kpi-row2">
     <div class="mini"><div class="label">Показы</div><div class="value" id="k-impr">—</div></div>
     <div class="mini"><div class="label">Стоимость лида</div><div class="value" id="k-cpl">—</div></div>
+    <div class="mini"><div class="label">Посещение профиля</div><div class="value" id="k-visits">—</div></div>
+    <div class="mini"><div class="label">Цена посещения</div><div class="value" id="k-vpc">—</div><div class="hint">расход на один визит в профиль</div></div>
     <div class="mini"><div class="label">CAC</div><div class="value" id="k-cac">—</div><div class="hint">стоимость привлечения 1 клиента</div></div>
     <div class="mini"><div class="label">Средний чек</div><div class="value" id="k-aov">—</div><div class="hint">выручка с одной продажи</div></div>
     <div class="mini"><div class="label">Подписчики</div><div class="value" id="k-subs">—</div></div>
@@ -400,6 +402,14 @@ function render(monthName){
   document.getElementById('k-salessum').textContent = hasSales ? fmtMoney(k.sales_sum) : '—';
   document.getElementById('k-salessum-sub').textContent = hasSales ? `${fmtInt(k.sales_count)} продаж за месяц` : 'нет данных о продажах';
   document.getElementById('k-cpl').textContent = k.leads > 0 ? '$' + (k.spend / k.leads).toFixed(2) : '—';
+  // Кампании на трафик не дают заявок, кампании на сообщения не дают визитов:
+  // показываем только те плитки, за которыми стоят реальные числа.
+  const hasVisits = (k.visits || 0) > 0;
+  document.getElementById('k-visits').textContent = fmtInt(k.visits || 0);
+  document.getElementById('k-vpc').textContent = hasVisits ? '$' + (k.spend / k.visits).toFixed(2) : '—';
+  document.getElementById('k-visits').closest('.mini').style.display = hasVisits ? '' : 'none';
+  document.getElementById('k-vpc').closest('.mini').style.display = hasVisits ? '' : 'none';
+  document.getElementById('k-cpl').closest('.mini').style.display = k.leads > 0 ? '' : 'none';
   document.getElementById('k-cac').textContent = hasSales ? '$' + (k.spend / k.sales_count).toFixed(2) : '—';
   document.getElementById('k-aov').textContent = hasSales ? '$' + (k.sales_sum / k.sales_count).toFixed(2) : '—';
   document.getElementById('k-subs').textContent = (k.subs != null) ? fmtInt(k.subs) : '—';
