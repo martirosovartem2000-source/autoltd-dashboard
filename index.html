@@ -274,7 +274,7 @@ select#metric-select:focus-visible{outline:2px solid var(--brand);outline-offset
     <div class="mini"><div class="label">Подписчики</div><div class="value" id="k-subs">—</div></div>
     <div class="mini"><div class="label">Конв. в продажу</div><div class="value" id="k-saleconv">—</div></div>
     <div class="mini"><div class="label">ДРР</div><div class="value" id="k-drr">—</div></div>
-    <div class="mini"><div class="label">ROAS</div><div class="value" id="k-roas">—</div><div class="hint">выручка на каждый доллар расхода</div></div>
+    <div class="mini"><div class="label">ROAS</div><div class="value" id="k-roas">—</div><div class="hint" id="k-roas-hint">возврат с каждого вложенного доллара</div></div>
   </div>
 
   <div class="panel" id="compare-panel" style="display:none;">
@@ -435,6 +435,9 @@ function render(monthName){
   document.getElementById('k-saleconv').textContent = hasSales ? fmtPct(k.sale_conv) : '—';
   document.getElementById('k-drr').textContent = hasSales ? fmtPct(k.drr) : '—';
   document.getElementById('k-roas').textContent = (k.spend > 0 && k.sales_sum > 0) ? fmtRoas(k.sales_sum / k.spend) : '—';
+  document.getElementById('k-roas-hint').textContent = (k.spend > 0 && k.sales_sum > 0)
+    ? '$' + (k.sales_sum / k.spend).toFixed(2) + ' продаж на каждый $1 рекламы'
+    : 'возврат с каждого вложенного доллара';
 
   const daily = trimTrailingEmpty(m.daily);
   document.getElementById('days-note').textContent = `${daily.length} дн. с данными`;
